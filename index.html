@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crypto Heist</title>
+
+  <!-- Font VT323 for retro-hacker style -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+  <style>
+    /* ====== RESET ====== */
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ====== GLOBAL STYLES ====== */
+    body {
+      background-color: black;
+      color: #33ff33;
+      font-family: 'VT323', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    #container {
+      width: 90%;
+      max-width: 600px;
+      margin: 40px auto;
+      text-align: center;
+    }
+
+    h1 {
+      text-shadow: 0 0 10px #33ff33, 0 0 20px #33ff33;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    .ascii-box {
+      border: 1px dashed #33ff33;
+      padding: 15px;
+      margin: 20px 0;
+      text-align: center;
+      white-space: pre-wrap;
+    }
+
+    input, button {
+      background-color: black;
+      color: #33ff33;
+      border: 1px solid #33ff33;
+      padding: 10px;
+      margin: 10px;
+      font-family: 'VT323', monospace;
+      cursor: pointer;
+    }
+    input:focus, button:focus {
+      outline: none;
+    }
+    button:hover {
+      background-color: #005500;
+    }
+
+    /* Glitch Effect */
+    .glitch {
+      position: relative;
+      font-size: 1.5rem;
+    }
+
+    .glitch::before, .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+      color: #33ff33;
+      background: black;
+      overflow: hidden;
+      clip-path: polygon(0 0, 100% 0, 100% 10%, 0 10%);
+    }
+
+    .glitch::before {
+      animation: glitch 2s infinite linear;
+    }
+
+    .glitch::after {
+      animation: glitch 2s infinite linear reverse;
+      clip-path: polygon(0 90%, 100% 90%, 100% 100%, 0 100%);
+    }
+
+    @keyframes glitch {
+      0% { clip-path: polygon(0 0, 100% 0, 100% 10%, 0 10%); }
+      25% { clip-path: polygon(0 20%, 100% 20%, 100% 30%, 0 30%); }
+      50% { clip-path: polygon(0 40%, 100% 40%, 100% 50%, 0 50%); }
+      75% { clip-path: polygon(0 60%, 100% 60%, 100% 70%, 0 70%); }
+      100% { clip-path: polygon(0 80%, 100% 80%, 100% 90%, 0 90%); }
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="container">
+    <h1>CRYPTO HEIST</h1>
+
+    <!-- Instructions Section -->
+    <div id="instructions" class="ascii-box">
+      <p>💻 Welcome to the Crypto Heist! 💻</p>
+      <p>Your mission: Crack the vault by solving the challenge.</p>
+      <p>Can you steal the treasure? 🪙</p>
+      <button id="startButton">Start Heist</button>
+    </div>
+
+    <!-- Vault Section -->
+    <div id="vault" class="ascii-box hidden">
+      <p>🔒 <span class="glitch" data-text="CRACK THE VAULT">CRACK THE VAULT</span> 🔒</p>
+      <p id="challenge">Decrypt this: <span id="encodedText"></span></p>
+      <input type="text" id="userInput" placeholder="Enter the answer...">
+      <button id="submitAnswer">Submit</button>
+      <p id="feedback"></p>
+    </div>
+
+    <!-- Success Section -->
+    <div id="success" class="ascii-box hidden">
+      <p>🎉 Congratulations! 🎉</p>
+      <p>You’ve successfully cracked the vault and claimed the treasure!</p>
+      <p>💰 Reward: 10 $SFC Tokens 💰</p>
+      <button id="playAgain">Play Again</button>
+    </div>
+  </div>
+
+  <script>
+    // DOM Elements
+    const startButton = document.getElementById('startButton');
+    const vaultSection = document.getElementById('vault');
+    const successSection = document.getElementById('success');
+    const instructions = document.getElementById('instructions');
+    const encodedText = document.getElementById('encodedText');
+    const userInput = document.getElementById('userInput');
+    const submitAnswer = document.getElementById('submitAnswer');
+    const feedback = document.getElementById('feedback');
+    const playAgain = document.getElementById('playAgain');
+
+    // Challenge Data
+    const challenges = [
+      { encoded: '01001000 01000101 01001100 01001100 01001111', answer: 'HELLO' },
+      { encoded: '01000011 01010010 01011001 01010000 01010100 01001111', answer: 'CRYPTO' },
+      { encoded: '01001000 01000101 01001001 01010011 01010100', answer: 'HEIST' }
+    ];
+
+    let currentChallenge = {};
+
+    // Start Heist
+    startButton.addEventListener('click', () => {
+      instructions.classList.add('hidden');
+      generateChallenge();
+      vaultSection.classList.remove('hidden');
+    });
+
+    // Generate Challenge
+    function generateChallenge() {
+      const randomIndex = Math.floor(Math.random() * challenges.length);
+      currentChallenge = challenges[randomIndex];
+      encodedText.textContent = currentChallenge.encoded;
+    }
+
+    // Submit Answer
+    submitAnswer.addEventListener('click', () => {
+      const userAnswer = userInput.value.trim().toUpperCase();
+      if (userAnswer === currentChallenge.answer) {
+        vaultSection.classList.add('hidden');
+        successSection.classList.remove('hidden');
+      } else {
+        feedback.textContent = '❌ Wrong answer! Try again.';
+      }
+    });
+
+    // Play Again
+    playAgain.addEventListener('click', () => {
+      successSection.classList.add('hidden');
+      userInput.value = '';
+      feedback.textContent = '';
+      generateChallenge();
+      vaultSection.classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>
